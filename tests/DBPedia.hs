@@ -8,7 +8,7 @@ import Data.RDF hiding (triple)
 selectExample :: IO ()
 selectExample = do
   (Just s) <- selectQuery "http://dbpedia.org/sparql" simpleSelect
-  putStrLn . take 500 . show $ s
+  putStrLn . show $ s
 
 askExample :: IO ()
 askExample = do
@@ -34,14 +34,11 @@ simpleSelect = do
 
     x    <- var
     name <- var
-    page <- var
 
     triple x (dbpprop .:. "genre") (resource .:. "Web_browser")
-
     triple x (foaf .:. "name") name
-    triple x (foaf .:. "page") page
 
-    return SelectQuery { queryVars = [name, page] }
+    return SelectQuery { queryVars = [name] }
 
 
 simpleConstruct :: Query ConstructQuery
