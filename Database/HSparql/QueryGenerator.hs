@@ -106,7 +106,7 @@ createAskQuery q = execQuery specifyType qshow
            query <- q
            modify $ \s -> s { askTriples = queryAsk query, queryType = AskType }
 
--- |Execute a 'Ask Query' action, returning the 'String' representation of the query.
+-- |Execute a 'Describe Query' action, returning the 'String' representation of the query.
 createDescribeQuery :: Query DescribeQuery -> String
 createDescribeQuery q = execQuery specifyType qshow
     where specifyType :: Query ()

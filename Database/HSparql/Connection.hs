@@ -25,11 +25,8 @@ import Network.URI hiding (URI)
 type EndPoint = String
 
 -- |Local representations of incoming XML results.
-data BindingValue = URI String                 -- ^Absolute reference to remote resource.
-                  | Literal String             -- ^Simple literal string.
-                  | TypedLiteral String String -- ^Literal element with type resource
-                  | LangLiteral String String  -- ^Literal element with language resource
-                  | Unbound                    -- ^Unbound result value
+data BindingValue = Bound Data.RDF.Node    -- ^RDF Node (UNode, BNode, LNode)
+                  | Unbound       -- ^Unbound result value
   deriving (Show, Eq)
 
 -- |Base 'QName' for results with a SPARQL-result URI specified.
@@ -57,12 +54,13 @@ structureContent s =
           value :: Element -> BindingValue
           value e =
             case qName (elName e) of
-              "uri"     -> URI (strContent e)
+              "uri"     -> Bound $ Data.RDF.unode $ T.pack $ strContent e
               "literal" -> case findAttr (unqual "datatype") e of
-                             Just dt -> TypedLiteral (strContent e) dt
+                             Just dt -> Bound $ Data.RDF.lnode $ Data.RDF.typedL (T.pack $ strContent e) (T.pack $ dt)
                              Nothing -> case findAttr langAttr e of
-                                          Just lang -> LangLiteral (strContent e) lang
-                                          Nothing   -> Literal (strContent e)
+                                          Just lang -> Bound $ Data.RDF.lnode $ Data.RDF.plainLL (T.pack $ strContent e) (T.pack $ lang)
+                                          Nothing   -> Bound $ Data.RDF.lnode $ Data.RDF.plainL (T.pack $ strContent e)
+              -- TODO: what about blank nodes?
               _         -> Unbound
 
           langAttr :: QName
@@ -101,8 +99,8 @@ constructQuery ep q = do
     let uri      = ep ++ "?" ++ urlEncodeVars [("query", createConstructQuery q)]
     rdfGraph <- httpCallForRdf uri
     case rdfGraph of
-     Left e -> error $ show e
-     Right graph -> return graph
+      Left e -> error $ show e
+      Right graph -> return graph
    
 
 -- |Connect to remote 'EndPoint' and construct 'TriplesGraph' from given
@@ -112,19 +110,19 @@ describeQuery ep q = do
     let uri      = ep ++ "?" ++ urlEncodeVars [("query", createDescribeQuery q)]
     rdfGraph <- httpCallForRdf uri
     case rdfGraph of
-     Left e -> error $ show e
-     Right graph -> return graph
+      Left e -> error $ show e
+      Right graph -> return graph
     
 -- |Takes a generated uri and makes simple HTTP request,
 -- asking for RDF N3 serialization. Returns either 'ParseFailure' or 'RDF'
 httpCallForRdf :: RDF rdf => String -> IO (Either ParseFailure rdf)
 httpCallForRdf uri = do
- let h1 = mkHeader HdrUserAgent "hsparql-client"
-     h2 = mkHeader HdrAccept "text/turtle"
-     request = Request { rqURI = fromJust $ parseURI uri
+  let h1 = mkHeader HdrUserAgent "hsparql-client"
+      h2 = mkHeader HdrAccept "text/turtle"
+      request = Request { rqURI = fromJust $ parseURI uri
                           , rqHeaders = [h1,h2]
                           , rqMethod = GET
                           , rqBody = ""
                           }
- response <- simpleHTTP request >>= getResponseBody
- return $ parseString (TurtleParser Nothing Nothing) (E.decodeUtf8 (B.pack response))
+  response <- simpleHTTP request >>= getResponseBody
+  return $ parseString (TurtleParser Nothing Nothing) (E.decodeUtf8 (B.pack response))
