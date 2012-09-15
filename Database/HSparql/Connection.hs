@@ -125,4 +125,4 @@ httpCallForRdf uri = do
                           , rqBody = ""
                           }
   response <- simpleHTTP request >>= getResponseBody
-  return $ parseString (TurtleParser Nothing Nothing) (E.decodeUtf8 (B.pack response))
+  return $ parseString (TurtleParser Nothing Nothing) $ E.decodeUtf8 (B.pack response)

@@ -7,13 +7,17 @@ import Test.HUnit
 
 import qualified Data.Text as T
 import qualified Data.RDF as RDF
+import qualified Data.RDF.TriplesGraph as G
 
 import Database.HSparql.Connection
 import Database.HSparql.QueryGenerator
 
 testSuite = [
-    testGroup "Connection tests" [
+    testGroup "Database.HSparql.Connection tests" [
       testCase "selectQuery" test_selectQuery
+      , testCase "askQuery" test_askQuery
+      , testCase "constructQuery" test_constructQuery
+      , testCase "describeQuery" test_describeQuery
     ]
   ]
 
@@ -39,3 +43,54 @@ test_selectQuery =
               triple x (foaf .:. "name") name
 
               return SelectQuery { queryVars = [name] }
+
+test_askQuery = do
+    bool <- askQuery endPoint query
+    assertBool "invalid" bool
+
+    where endPoint = "http://localhost:3000"
+          query = do
+              resource <- prefix "dbpedia" (iriRef "http://dbpedia.org/resource/")
+              dbprop  <- prefix "dbprop" (iriRef "http://dbpedia.org/property/")
+
+              x <- var
+              ask <- askTriple x (dbprop .:. "genre") (resource .:. "Web_browser")
+
+              return AskQuery { queryAsk = [ask] }
+
+test_constructQuery =
+  let expectedGraph :: G.TriplesGraph
+      expectedGraph = G.empty -- TODO
+  in do
+    graph <- constructQuery endPoint query :: IO G.TriplesGraph
+    assertBool "RDF graphs are not equal" $ RDF.isIsomorphic expectedGraph graph
+
+    where endPoint = "http://localhost:3000"
+          query = do
+              resource <- prefix "dbpedia" (iriRef "http://dbpedia.org/resource/")
+              dbpprop  <- prefix "dbprop" (iriRef "http://dbpedia.org/property/")
+              foaf     <- prefix "foaf" (iriRef "http://xmlns.com/foaf/0.1/")
+              example  <- prefix "example" (iriRef "http://www.example.com/")
+
+              x    <- var
+              name <- var
+
+              construct <- constructTriple x (example .:. "hasName") name
+          
+              triple x (dbpprop .:. "genre") (resource .:. "Web_browser")
+              triple x (foaf .:. "name") name
+
+              return ConstructQuery { queryConstructs = [construct] }
+
+test_describeQuery =
+  let expectedGraph :: G.TriplesGraph
+      expectedGraph =  G.empty -- TODO
+  in do
+    graph <- describeQuery endPoint query :: IO G.TriplesGraph
+    assertBool "RDF graphs are not equal" $ RDF.isIsomorphic expectedGraph graph
+
+    where endPoint = "http://localhost:3000"
+          query = do
+              resource <- prefix "dbpedia" (iriRef "http://dbpedia.org/resource/")
+              uri <- describeIRI (resource .:. "Edinburgh")
+              return DescribeQuery { queryDescribe = uri }

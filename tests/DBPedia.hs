@@ -53,13 +53,11 @@ simpleConstruct = do
 
     x    <- var
     name <- var
-    page <- var
 
     construct <- constructTriple x (example .:. "hasName") name
     
     triple x (dbpprop .:. "genre") (resource .:. "Web_browser")
     triple x (foaf .:. "name") name
-    triple x (foaf .:. "page") page
 
     return ConstructQuery { queryConstructs = [construct] }
 
@@ -92,7 +90,6 @@ trickySelect = do
     x     <- var
     name  <- var
     fbase <- var
-    page  <- var
 
     -- Identify
     triple x (dbpprop .:. "genre") (resource .:. "Web_browser")
@@ -103,14 +100,12 @@ trickySelect = do
                   filterExpr $ regex fbase "freebase"
     filterExpr $ notExpr $ bound fbase
 
-    triple x (foaf .:. "page") page
-
     distinct
 
     orderNext name
     orderNextDesc fbase
 
-    return SelectQuery { queryVars =  [x, name, page, fbase] }
+    return SelectQuery { queryVars =  [x, name, fbase] }
 
 frenchFilmsSelect :: Query SelectQuery
 frenchFilmsSelect = do

@@ -18,7 +18,7 @@ homepage:      https://github.com/robstewart57/hsparql
 bug-reports:   https://github.com/robstewart57/hsparql/issues
 Stability:     Experimental
 Build-type:    Simple
-Cabal-Version: >= 1.8
+Cabal-Version: >= 1.9.2
 
 library
   Exposed-modules: Database.HSparql.Connection
@@ -37,10 +37,9 @@ test-suite test-hsparql
   type:          exitcode-stdio-1.0
   main-is:       AllTests.hs
   build-depends: hsparql
-                 , rdf4h
+                 , rdf4h >= 1.0.0
                  , base
                  , text
-                 , Cabal >= 1.9.2
                  , http-types
                  , HUnit
                  , test-framework

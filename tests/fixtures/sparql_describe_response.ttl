@@ -33,21 +33,21 @@ dbpedia:Edinburgh	owl:sameAs	ns8:Mx4rpqcLcs4CT-GoRdyoT-cGlQ .
 @prefix ns9:	<http://de.dbpedia.org/resource/> .
 dbpedia:Edinburgh	owl:sameAs	ns9:Edinburgh .
 @prefix ns10:	<http://fr.dbpedia.org/resource/> .
-dbpedia:Edinburgh	owl:sameAs	ns10:Ãdimbourg ,
+dbpedia:Edinburgh	owl:sameAs	ns10:Édimbourg ,
 		<http://sws.geonames.org/2650225/> .
 @prefix ns11:	<http://linkedgeodata.org/triplify/> .
 dbpedia:Edinburgh	owl:sameAs	ns11:node17898859 .
 @prefix ns12:	<http://cs.dbpedia.org/resource/> .
 dbpedia:Edinburgh	owl:sameAs	ns12:Edinburgh .
 @prefix ns13:	<http://el.dbpedia.org/resource/> .
-dbpedia:Edinburgh	owl:sameAs	ns13:ÎÎ´Î¹Î¼Î²Î¿ÏÏÎ³Î¿ .
+dbpedia:Edinburgh	owl:sameAs	ns13:Εδιμβούργο .
 @prefix ns14:	<http://ja.dbpedia.org/resource/> .
-dbpedia:Edinburgh	owl:sameAs	ns14:ã¨ãã£ã³ãã© ,
+dbpedia:Edinburgh	owl:sameAs	ns14:エディンバラ ,
 		<http://rdf.freebase.com/ns/m.02m77> .
 @prefix ns15:	<http://es.dbpedia.org/resource/> .
 dbpedia:Edinburgh	owl:sameAs	ns15:Edimburgo .
 @prefix ns16:	<http://ko.dbpedia.org/resource/> .
-dbpedia:Edinburgh	owl:sameAs	ns16:ìë ë²ë¬ .
+dbpedia:Edinburgh	owl:sameAs	ns16:에든버러 .
 @prefix ns17:	<http://pl.dbpedia.org/resource/> .
 dbpedia:Edinburgh	owl:sameAs	ns17:Edynburg .
 @prefix ns18:	<http://it.dbpedia.org/resource/> .
@@ -55,7 +55,7 @@ dbpedia:Edinburgh	owl:sameAs	ns18:Edimburgo .
 @prefix ns19:	<http://pt.dbpedia.org/resource/> .
 dbpedia:Edinburgh	owl:sameAs	ns19:Edimburgo .
 @prefix ns20:	<http://ru.dbpedia.org/resource/> .
-dbpedia:Edinburgh	owl:sameAs	ns20:Ð­Ð´Ð¸Ð½Ð±ÑÑÐ³ .
+dbpedia:Edinburgh	owl:sameAs	ns20:Эдинбург .
 @prefix rdfs:	<http://www.w3.org/2000/01/rdf-schema#> .
 dbpedia:Edinburgh	rdfs:label	"Edimburgo"@pt ,
 		"\u042D\u0434\u0438\u043D\u0431\u0443\u0440\u0433"@ru ,
