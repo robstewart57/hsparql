@@ -5,6 +5,7 @@ import Test.Framework (testGroup)
 import Test.Framework.Providers.HUnit
 import Test.HUnit
 
+import qualified Data.Map as Map
 import qualified Data.Text as T
 import qualified Data.RDF as RDF
 import qualified Data.RDF.TriplesGraph as G
@@ -60,10 +61,13 @@ test_askQuery = do
 
 test_constructQuery =
   let expectedGraph :: G.TriplesGraph
-      expectedGraph = G.empty -- TODO
+      expectedGraph = G.mkRdf expectedTriples Nothing (RDF.PrefixMappings Map.empty)
+      expectedTriples = [ RDF.Triple (RDF.unode $ T.pack "http://dbpedia.org/resource/Kazehakase")
+                                     (RDF.unode $ T.pack "http://www.example.com/hasName")
+                                     (RDF.lnode $ RDF.plainLL (T.pack "Kazehakase") (T.pack "en")) ]
   in do
     graph <- constructQuery endPoint query :: IO G.TriplesGraph
-    assertBool "RDF graphs are not equal" $ RDF.isIsomorphic expectedGraph graph
+    assertBool "RDF does not include the contructed triple" $ RDF.isIsomorphic expectedGraph graph
 
     where endPoint = "http://localhost:3000"
           query = do
@@ -83,11 +87,10 @@ test_constructQuery =
               return ConstructQuery { queryConstructs = [construct] }
 
 test_describeQuery =
-  let expectedGraph :: G.TriplesGraph
-      expectedGraph =  G.empty -- TODO
+  let expectedNode = RDF.unode $ T.pack "http://dbpedia.org/resource/Edinburgh"
   in do
     graph <- describeQuery endPoint query :: IO G.TriplesGraph
-    assertBool "RDF graphs are not equal" $ RDF.isIsomorphic expectedGraph graph
+    assertBool "RDF does not include the required node" $ RDF.rdfContainsNode graph expectedNode
 
     where endPoint = "http://localhost:3000"
           query = do

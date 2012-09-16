@@ -1,1 +1,3 @@
-# Empty TURTLE
+@prefix dbpedia: <http://dbpedia.org/resource/> .
+@prefix ns0:    <http://www.example.com/> .
+dbpedia:Kazehakase      ns0:hasName     "Kazehakase"@en .
