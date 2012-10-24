@@ -13,6 +13,11 @@ selectExample = do
   (Just s) <- selectQuery "http://dbpedia.org/sparql" simpleSelect
   print s
 
+selectWithLiteralExample :: IO ()
+selectWithLiteralExample = do
+  (Just s) <- selectQuery "http://dbpedia.org/sparql" simpleSelectWithLiteral
+  putStrLn . show $ s
+
 askExample :: IO ()
 askExample = do
   res <- askQuery "http://dbpedia.org/sparql" simpleAsk
@@ -43,6 +48,18 @@ simpleSelect = do
 
     return SelectQuery { queryVars = [name] }
 
+simpleSelectWithLiteral :: Query SelectQuery
+simpleSelectWithLiteral = do
+    ontology <- prefix "dbpedia" (iriRef "http://dbpedia.org/ontology/")
+    rdf      <- prefix "rdf" (iriRef "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+    rdfs     <- prefix "rdfs" (iriRef "http://www.w3.org/2000/01/rdf-schema#")
+
+    l        <- var
+
+    triple l (rdf .:. "type") (ontology .:. "ProgrammingLanguage")
+    triple l (rdfs .:. "label") ("D (programming language)", "en")
+
+    return SelectQuery { queryVars = [l] }
 
 simpleConstruct :: Query ConstructQuery
 simpleConstruct = do

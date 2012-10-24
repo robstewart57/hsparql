@@ -67,7 +67,7 @@ test_constructQuery =
                                      (RDF.lnode $ RDF.plainLL (T.pack "Kazehakase") (T.pack "en")) ]
   in do
     graph <- constructQuery endPoint query :: IO G.TriplesGraph
-    assertBool "RDF does not include the contructed triple" $ RDF.isIsomorphic expectedGraph graph
+    assertBool "RDF does not include the constructed triple" $ RDF.isIsomorphic expectedGraph graph
 
     where endPoint = "http://localhost:3000"
           query = do

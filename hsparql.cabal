@@ -29,6 +29,7 @@ library
                , xml
                , rdf4h >= 1.0.0
                , bytestring
+               , MissingH
                , network
                , text
   extensions:  RankNTypes FlexibleInstances
