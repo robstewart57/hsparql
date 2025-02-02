@@ -3,4 +3,4 @@ packages:
 - '.'
 extra-deps:
 - git: https://github.com/robstewart57/rdf4h.git
-  commit: 018755800c6503ddebe27efb7261be1c95ee2f12
+  commit: c6ab9c7990b97a7ea9037da91f6fe9de9bc73805
