@@ -1,5 +1,8 @@
 {-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE PostfixOperators  #-}
+{-# LANGUAGE PostfixOperators #-}
+{-# LANGUAGE TypeSynonymInstances #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Database.HSparql.QueryGeneratorTest ( testSuite ) where
 
