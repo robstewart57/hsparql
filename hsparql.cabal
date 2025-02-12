@@ -1,5 +1,5 @@
 Name:          hsparql
-Version:       0.3.8
+Version:       0.3.9
 Synopsis:      A SPARQL query generator and DSL, and a client to query a SPARQL server.
 Category:      Database
 Description:
