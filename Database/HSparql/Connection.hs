@@ -26,6 +26,7 @@ import Control.Monad
 import Control.Monad.IO.Class
 import qualified Data.ByteString.Char8 as B
 import qualified Data.ByteString.Lazy.Char8 as LB
+import Data.Default (def)
 import Data.Maybe (isJust, mapMaybe)
 import qualified Data.RDF as RDF
 import qualified Data.Text as T
@@ -143,7 +144,7 @@ selectQueryRaw ep q = do
           { method = "GET",
             requestHeaders = [h1, h2]
           }
-  let settings = mkManagerSettings (TLSSettingsSimple True False False) Nothing
+  let settings = mkManagerSettings (TLSSettingsSimple True False False def) Nothing
   manager <- liftIO $ newManager settings
   resp <- httpLbs request manager
   return $ structureContent (LB.unpack (responseBody resp))
@@ -161,7 +162,7 @@ askQueryRaw ep q = do
           { method = "GET",
             requestHeaders = [h1, h2, h3, h4]
           }
-  let settings = mkManagerSettings (TLSSettingsSimple True False False) Nothing
+  let settings = mkManagerSettings (TLSSettingsSimple True False False def) Nothing
   manager <- liftIO $ newManager settings
   resp <- httpLbs request manager
   return $ parseAsk (LB.unpack (responseBody resp))
@@ -180,7 +181,7 @@ updateQueryRaw ep q = do
             requestHeaders = [h1, h2, h3],
             requestBody = RequestBodyBS (T.encodeUtf8 (T.pack body))
           }
-  let settings = mkManagerSettings (TLSSettingsSimple True False False) Nothing
+  let settings = mkManagerSettings (TLSSettingsSimple True False False def) Nothing
   manager <- liftIO $ newManager settings
   resp <- httpLbs request manager
   return $ parseUpdate (LB.unpack (responseBody resp))
@@ -213,7 +214,7 @@ httpCallForRdf uri = do
           { method = "GET",
             requestHeaders = [h1, h2]
           }
-  let settings = mkManagerSettings (TLSSettingsSimple True False False) Nothing
+  let settings = mkManagerSettings (TLSSettingsSimple True False False def) Nothing
   manager <- liftIO $ newManager settings
   resp <- httpLbs request manager
   return $ RDF.parseString (TurtleParser Nothing Nothing) $ E.decodeUtf8 (LB.toStrict (responseBody resp))

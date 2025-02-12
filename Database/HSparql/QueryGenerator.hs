@@ -184,6 +184,7 @@ module Database.HSparql.QueryGenerator
   )
 where
 
+import Control.Monad (void)
 import Control.Monad.State
 import Data.List (intercalate, intersperse)
 import qualified Data.List as L
