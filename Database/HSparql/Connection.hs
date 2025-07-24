@@ -17,8 +17,9 @@ module Database.HSparql.Connection
     askQueryRaw,
     updateQueryRaw,
     describeQueryRaw,
+
     -- * parse query results
-    structureContent
+    structureContent,
   )
 where
 
@@ -37,6 +38,7 @@ import Network.Connection (TLSSettings (..))
 import Network.HTTP
 import Network.HTTP.Conduit
 import Network.HTTP.Types.Header
+import qualified Network.HTTP.Types.URI as URI
 import Text.RDF.RDF4H.TurtleParser
 import Text.XML.Light
 import Text.XML.Light.Lexer (XmlSource)
@@ -58,7 +60,7 @@ sparqlResult s = (unqual s) {qURI = Just "http://www.w3.org/2005/sparql-results#
 
 -- | Transform the 'String' result from the HTTP request into a two-dimensional
 --   table storing the bindings for each variable in each row.
-structureContent :: XmlSource a => a -> Maybe [[BindingValue]]
+structureContent :: (XmlSource a) => a -> Maybe [[BindingValue]]
 structureContent s =
   do
     e <- doc
@@ -135,14 +137,16 @@ describeQuery ep q = describeQueryRaw ep (createDescribeQuery q)
 
 selectQueryRaw :: Database.HSparql.Connection.EndPoint -> String -> IO (Maybe [[BindingValue]])
 selectQueryRaw ep q = do
-  let uri = ep ++ "?" ++ urlEncodeVars [("query", q)]
+  let contentParams = [("query", Just (T.encodeUtf8 (T.pack q)))]
       h1 = (hAccept, "application/sparql-results+xml")
       h2 = (hUserAgent, "hsparql-client")
-  request' <- parseRequest uri
+      h3 = (hContentType, "application/x-www-form-urlencoded")
+  let request' = parseRequest_ ep
   let request =
         request'
-          { method = "GET",
-            requestHeaders = [h1, h2]
+          { method = "POST",
+            requestHeaders = [h1, h2, h3],
+            requestBody = RequestBodyBS (URI.renderQuery False contentParams)
           }
   let settings = mkManagerSettings (TLSSettingsSimple True False False def) Nothing
   manager <- liftIO $ newManager settings
@@ -204,7 +208,7 @@ describeQueryRaw ep q = do
 
 -- | Takes a generated uri and makes simple HTTP request,
 --  asking for RDF N3 serialization. Returns either 'ParseFailure' or 'RDF'
-httpCallForRdf :: RDF.Rdf a => String -> IO (Either RDF.ParseFailure (RDF.RDF a))
+httpCallForRdf :: (RDF.Rdf a) => String -> IO (Either RDF.ParseFailure (RDF.RDF a))
 httpCallForRdf uri = do
   let h1 = (hUserAgent, "hsparql-client")
       h2 = (hAccept, "text/turtle")
