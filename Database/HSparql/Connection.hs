@@ -33,6 +33,7 @@ import qualified Data.RDF as RDF
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as E
 import qualified Data.Text.Encoding as T
+import qualified Data.Text.Lazy.Encoding as EL
 import Database.HSparql.QueryGenerator
 import Network.Connection (TLSSettings (..))
 import Network.HTTP
@@ -151,7 +152,7 @@ selectQueryRaw ep q = do
   let settings = mkManagerSettings (TLSSettingsSimple True False False def) Nothing
   manager <- liftIO $ newManager settings
   resp <- httpLbs request manager
-  return $ structureContent (LB.unpack (responseBody resp))
+  return $ structureContent (EL.decodeUtf8 (responseBody resp))
 
 askQueryRaw :: Database.HSparql.Connection.EndPoint -> String -> IO Bool
 askQueryRaw ep q = do
