@@ -88,6 +88,8 @@ module Database.HSparql.QueryGenerator
     -- ** Groups handling
     groupBy,
     groupBy_,
+    having,
+    having_,
 
     -- ** Order handling
     orderNext,
@@ -186,6 +188,7 @@ where
 
 import Control.Monad (void)
 import Control.Monad.State
+import Data.Maybe (fromJust)
 import Data.List (intercalate, intersperse)
 import qualified Data.List as L
 import Data.List.NonEmpty (NonEmpty (..))
@@ -516,6 +519,14 @@ groupBy e = do
 
 groupBy_ :: (TermLike a) => a -> Query ()
 groupBy_ = void . groupBy
+
+having :: (TermLike a) => a -> Query Having
+having e = do
+  modify $ \s -> s { havings = Just . Having . expr $ e }
+  fromJust <$> gets havings
+
+having_ :: (TermLike a) => a -> Query ()
+having_ = void . having
 
 -- Order handling
 
@@ -887,6 +898,7 @@ queryData =
       describeURI = Nothing,
       duplicates = NoLimits,
       groups = [],
+      havings = Nothing,
       ordering = [],
       limits = NoLimit
     }
@@ -1074,6 +1086,9 @@ data GroupGraphPattern = GroupGraphPattern [Pattern]
 newtype GroupBy = GroupBy Expr
   deriving (Show)
 
+newtype Having = Having Expr
+  deriving (Show)
+
 data OrderBy
   = Asc Expr
   | Desc Expr
@@ -1100,6 +1115,7 @@ data QueryData = QueryData
     describeURI :: Maybe IRIRef,
     duplicates :: Duplicates,
     groups :: [GroupBy],
+    havings :: Maybe Having,
     ordering :: [OrderBy],
     limits :: Limit
   }
@@ -1297,6 +1313,13 @@ instance QueryShow [GroupBy] where
   qshow [] = ""
   qshow gs = unwords $ "GROUP BY" : fmap qshow gs
 
+instance QueryShow Having where
+  qshow (Having e) = "HAVING (" ++ qshow e ++ ")"
+
+instance QueryShow (Maybe Having) where
+  qshow Nothing = ""
+  qshow (Just e) = qshow e
+
 instance QueryShow OrderBy where
   qshow (Asc e) = "ASC(" ++ qshow e ++ ")"
   qshow (Desc e) = "DESC(" ++ qshow e ++ ")"
@@ -1311,11 +1334,11 @@ instance QueryShow QueryData where
       prefixDecl = qshow (prefixes qd)
       whereClause = unwords ["WHERE", qshow (pattern qd)]
       groupClause = qshow . groups $ qd
-      -- TODO: HAVING clause
+      havingClause = qshow . havings $ qd
       orderClause = qshow . ordering $ qd
       -- TODO: Offset
       limitOffsetClauses = qshow (limits qd)
-      solutionModifier = unwords' [groupClause, orderClause, limitOffsetClauses]
+      solutionModifier = unwords' [groupClause, havingClause, orderClause, limitOffsetClauses]
       query = case queryType qd of
         SelectType ->
           unwords'
