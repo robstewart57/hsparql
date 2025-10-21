@@ -300,6 +300,24 @@ SELECT ?x1 ((COUNT(?x0)) AS ?x2) WHERE {
         select [SelectVar o, count s `as` countVar]
     )
 
+  , ( [Str.s|
+SELECT ?x1 WHERE {
+  ?x0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?x1 .
+} GROUP BY ?x1
+HAVING (COUNT(?x0) > 1)
+|]
+    , createQuery $ do
+        s <- var
+        o <- var
+
+        triple_ s (iriRef "http://www.w3.org/1999/02/22-rdf-syntax-ns#type") o
+
+        groupBy_ o
+        having_ $ count s .>. (1::Integer)
+
+        selectVars [o]
+    )
+
   -- Count number of resources typed with a class from Wikidata.
   , ( [Str.s|
 SELECT ((COUNT(?x0)) AS ?x2) WHERE {
@@ -589,4 +607,3 @@ testSuite = [
       \(expected, actual) -> testCase (T.unpack expected) $ do
         assertEqual "" (normalizeWhitespace expected) (normalizeWhitespace actual)
   ]
-
